@@ -1,30 +1,8 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
 <head>
     <title>Cars</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" />
-    <!--    <script>-->
-    <!--        function cleanFormBeforeSubmit() {-->
-    <!--            // Remove empty parameters-->
-    <!--            const form = document.getElementById('filterForm');-->
-    <!--            const inputs = form.querySelectorAll('input, select');-->
-
-    <!--            inputs.forEach(input => {-->
-    <!--                if ((input.type === 'text' || input.type === 'number') && input.value === '') {-->
-    <!--                    input.removeAttribute('name');-->
-    <!--                }-->
-    <!--                if (input.tagName.toLowerCase() === 'select' && input.value === '') {-->
-    <!--                    input.removeAttribute('name');-->
-    <!--                }-->
-    <!--            });-->
-    <!--        }-->
-
-    <!--        function handleBrandChange(select) {-->
-    <!--            // Reset model when brand changes-->
-    <!--            document.getElementById('model').value = '';-->
-    <!--            document.getElementById('filterForm').submit();-->
-    <!--        }-->
-    <!--    </script>-->
 
     <style>
         body {
@@ -32,13 +10,11 @@
             color: white;
         }
         .sidebar {
-            width: 25%;
             padding: 20px;
             border-right: 1px solid #444;
             height: 100vh;
         }
         .content {
-            width: 75%;
             padding: 20px;
         }
         .car-card {
@@ -64,64 +40,72 @@
             background-color: #138496;
             color: white;
         }
+
+        /* Mobile responsiveness */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                border-right: none;
+            }
+            .content {
+                width: 100%;
+                margin-top: 20px;
+            }
+            .car-card {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
     </style>
 </head>
 <body>
-<div class="d-flex">
-    <div class="sidebar">
+<div class="container-fluid d-flex flex-column flex-md-row">
+    <div class="sidebar col-12 col-md-3">
         <h2>Filter Cars</h2>
-        <form th:action="@{/cars}" method="get" id="filterForm" onsubmit="cleanFormBeforeSubmit()">
-            <!-- Brand Dropdown -->
+        <form th:action="@{/cars}" method="get" id="filterForm">
+
             <label for="brand">Brand</label>
-            <select id="brand" name="brand" class="form-select mb-2"
-                    onchange="handleBrandChange(this)">
+            <select id="brand" name="brand" class="form-select mb-2">
                 <option value="">All Brands</option>
-                <option th:each="brand : ${brands}"
-                        th:value="${brand}"
-                        th:text="${brand}"
-                        th:selected="${selectedBrand == brand}">
+                <option th:each="brand : ${brands}" th:value="${brand}" th:text="${brand}" th:selected="${selectedBrand == brand}">
                 </option>
             </select>
 
-            <!-- Model Dropdown -->
+
             <label for="model">Model</label>
-            <select id="model" name="model" class="form-select mb-2"
-                    th:disabled="${selectedBrand == null}">
+            <select id="model" name="model" class="form-select mb-2" th:disabled="${selectedBrand == null}">
                 <option value="">All Models</option>
-                <option th:each="model : ${models}"
-                        th:value="${model}"
-                        th:text="${model}"
-                        th:selected="${selectedModel == model}">
+                <option th:each="model : ${models}" th:value="${model}" th:text="${model}" th:selected="${selectedModel == model}">
                 </option>
             </select>
 
-            <!-- Year Range -->
             <label>Year</label>
             <div class="d-flex mb-2">
-                <input type="number" name="minYear" class="form-control me-2"
-                       placeholder="From" th:value="${minYear}">
-                <input type="number" name="maxYear" class="form-control"
-                       placeholder="To" th:value="${maxYear}">
+                <input type="number" name="minYear" class="form-control me-2" placeholder="From" th:value="${minYear}">
+                <input type="number" name="maxYear" class="form-control" placeholder="To" th:value="${maxYear}">
             </div>
 
-            <!-- KW Range -->
+
             <label>KW</label>
             <div class="d-flex mb-3">
-                <input type="number" name="minKw" class="form-control me-2"
-                       placeholder="From" th:value="${minKw}">
-                <input type="number" name="maxKw" class="form-control"
-                       placeholder="To" th:value="${maxKw}">
+                <input type="number" name="minKw" class="form-control me-2" placeholder="From" th:value="${minKw}">
+                <input type="number" name="maxKw" class="form-control" placeholder="To" th:value="${maxKw}">
             </div>
 
             <div class="d-grid gap-2">
                 <button type="submit" class="btn btn-info">Apply Filters</button>
                 <a href="/cars" class="btn btn-secondary">Clear Filters</a>
-                <a href="/cars/create" class="btn btn-primary">CREATE</a>
+                <th:block sec:authorize="hasAuthority('ROLE_ADMIN')">
+                    <a href="/cars/create" class="btn btn-primary">CREATE</a>
+                </th:block>
+                <div class="d-grid gap-2 mt-4">
+                    <a href="/logout" class="btn btn-danger">Logout</a>
+                </div>
             </div>
         </form>
     </div>
 
-    <div class="content">
+    <div class="content col-12 col-md-9">
         <h1 class="text-center">Available Cars</h1>
         <div class="car-container">
             <div th:each="car : ${cars}" class="car-card">
@@ -133,8 +117,10 @@
                     <p><strong>Price:</strong> <span th:text="${car.price}"></span> €</p>
                 </div>
                 <div class="ms-auto">
-                    <a th:href="@{/cars/editCar/{id}(id=${car.id})}" class="btn btn-warning btn-sm me-2">UPDATE</a>
-                    <a th:href="@{/cars/delete/{id}(id=${car.id})}" class="btn btn-danger btn-sm me-2">DELETE</a>
+                    <th:block sec:authorize="hasAuthority('ROLE_ADMIN')">
+                        <a th:href="@{/cars/editCar/{id}(id=${car.id})}" class="btn btn-warning btn-sm me-2">UPDATE</a>
+                        <a th:href="@{/cars/delete/{id}(id=${car.id})}" class="btn btn-danger btn-sm me-2">DELETE</a>
+                    </th:block>
                     <a th:href="@{/cars/checkCar/{id}(id=${car.id})}" class="btn btn-check-car btn-sm">CHECK CAR</a>
                 </div>
             </div>

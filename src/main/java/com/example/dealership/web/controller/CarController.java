@@ -1,17 +1,29 @@
 package com.example.dealership.web.controller;
 
 
-
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartFile;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Path;  // Correct Path import for file handling
+import java.nio.file.Paths;
 import com.example.dealership.model.Car;
+import com.example.dealership.model.CarPhoto;
 import com.example.dealership.model.Doors;
 import com.example.dealership.model.Fuel;
+import com.example.dealership.service.CarPhotoService;
 import com.example.dealership.service.CarService;
 import com.example.dealership.service.DoorService;
 import com.example.dealership.service.FuelService;
+//import jakarta.persistence.criteria.Path;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.List;
 
 @Controller
@@ -20,19 +32,22 @@ public class CarController {
     private final CarService carService;
     private final FuelService fuelService;
     private final DoorService doorService;
+    private final CarPhotoService carPhotoService;
 
-    public CarController(CarService carService, FuelService fuelService, DoorService doorService) {
+    public CarController(CarService carService, FuelService fuelService, DoorService doorService, CarPhotoService carPhotoService) {
         this.carService = carService;
         this.fuelService = fuelService;
         this.doorService = doorService;
+        this.carPhotoService = carPhotoService;
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/delete/{id}")
     public String deleteCar(@PathVariable Long id) {
         carService.deleteById(id);
         return "redirect:/cars";
     }
-
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/editCar/{id}")
     public String showEditForm(@PathVariable Long id, Model model) {
         Car car = carService.findById(id).orElseThrow();
@@ -43,7 +58,7 @@ public class CarController {
         model.addAttribute("doorsList", doors);
         return "editCar";
     }
-
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/edit/{id}")
     public String updateCar(@PathVariable Long id,
                             @ModelAttribute Car car,
@@ -64,6 +79,7 @@ public class CarController {
         return "redirect:/cars";
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/create")
     public String showCreateForm(Model model) {
         List<Fuel> fuels = fuelService.findAllFuels();
@@ -72,7 +88,7 @@ public class CarController {
         model.addAttribute("doorsList", doors);
         return "createCar";
     }
-
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/create")
     public String createCar(@RequestParam String brand,
                             @RequestParam String model,
@@ -142,12 +158,43 @@ public class CarController {
         return "cars";
     }
 
-    // Keep all other existing methods the same below...
+
+
     @GetMapping("/checkCar/{id}")
     public String checkCar(@PathVariable Long id, Model model) {
         Car car = carService.findById(id).orElseThrow();
         model.addAttribute("car", car);
+
+        // Get photos of the car
+        List<CarPhoto> carPhotos = carPhotoService.findByCarId(id);
+        model.addAttribute("photos", carPhotos);
+
         return "checkCar";
     }
+    @PreAuthorize("hasRole('ADMIN')")
+    @PostMapping("/uploadPhoto/{carId}")
+    public String uploadCarPhoto(@PathVariable Long carId, @RequestParam("file") MultipartFile file) throws IOException {
+
+        String folderPath = "storage/cars/" + carId;
+        File folder = new File(folderPath);
+        if (!folder.exists()) {
+            folder.mkdirs();
+        }
+
+        String fileName = file.getOriginalFilename();
+        Path filePath = Paths.get(folderPath, fileName);
+        File fileToSave = filePath.toFile();
+        file.transferTo(fileToSave);
+
+
+        Car car = carService.findById(carId).orElseThrow();
+        CarPhoto carPhoto = new CarPhoto();
+        carPhoto.setCar(car);
+        carPhoto.setPhotoUrl(filePath.toString());
+        carPhotoService.save(carPhoto);
+
+        return "redirect:/cars/checkCar/" + carId;
+    }
+
 }
 

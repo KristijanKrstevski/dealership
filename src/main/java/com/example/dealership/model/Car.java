@@ -5,6 +5,8 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
 @Entity
 //@NoArgsConstructor
@@ -31,6 +33,8 @@ public class Car {
 
     private int km;
     private double price;
+    @OneToMany(mappedBy = "car", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<CarPhoto> photos;
     public Car() {
     }
     public Car(String brand, String model, int kw, int year, Fuel fuel, String color, Doors doors, int km, double price) {
@@ -51,5 +55,12 @@ public class Car {
 
     public void setDoors(Doors doors) {
         this.doors = doors;
+    }
+    public List<CarPhoto> getPhotos() {
+        return photos;
+    }
+
+    public void setPhotos(List<CarPhoto> photos) {
+        this.photos = photos;
     }
 }
