@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Car Details</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .car-detail {
+            margin-bottom: 15px;
+        }
+        .car-detail label {
+            font-weight: bold;
+        }
+        .car-detail p {
+            margin: 5px 0;
+        }
+        .back-btn {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+        }
+        .back-btn:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Car Details</h2>
+    <div class="car-detail">
+        <label>Brand:</label>
+        <p th:text="${car.brand}">Car Brand</p>
+    </div>
+    <div class="car-detail">
+        <label>Model:</label>
+        <p th:text="${car.model}">Car Model</p>
+    </div>
+    <div class="car-detail">
+        <label>Power (kw):</label>
+        <p th:text="${car.kw}">Car Power</p>
+    </div>
+    <div class="car-detail">
+        <label>Year:</label>
+        <p th:text="${car.year}">Car Year</p>
+    </div>
+    <div class="car-detail">
+        <label>Fuel:</label>
+        <p th:text="${car.fuel.fuelType}">Fuel Type</p>
+    </div>
+    <div class="car-detail">
+        <label>Color:</label>
+        <p th:text="${car.color}">Car Color</p>
+    </div>
+    <div class="car-detail">
+        <label>Doors:</label>
+        <p th:text="${car.doors.doorCount}">Number of Doors</p>
+    </div>
+    <div class="car-detail">
+        <label>KM:</label>
+        <p th:text="${car.km}">Kilometers Driven</p>
+    </div>
+    <div class="car-detail">
+        <label>Price:</label>
+        <p th:text="${car.price}">Car Price</p>
+    </div>
+
+    <a href="/cars" class="back-btn">Back to Car List</a>
+</div>
+
+</body>
+</html>

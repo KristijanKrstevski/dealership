@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Cars</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" />
+    <!--    <script>-->
+    <!--        function cleanFormBeforeSubmit() {-->
+    <!--            // Remove empty parameters-->
+    <!--            const form = document.getElementById('filterForm');-->
+    <!--            const inputs = form.querySelectorAll('input, select');-->
+
+    <!--            inputs.forEach(input => {-->
+    <!--                if ((input.type === 'text' || input.type === 'number') && input.value === '') {-->
+    <!--                    input.removeAttribute('name');-->
+    <!--                }-->
+    <!--                if (input.tagName.toLowerCase() === 'select' && input.value === '') {-->
+    <!--                    input.removeAttribute('name');-->
+    <!--                }-->
+    <!--            });-->
+    <!--        }-->
+
+    <!--        function handleBrandChange(select) {-->
+    <!--            // Reset model when brand changes-->
+    <!--            document.getElementById('model').value = '';-->
+    <!--            document.getElementById('filterForm').submit();-->
+    <!--        }-->
+    <!--    </script>-->
+
+    <style>
+        body {
+            background-color: #121212;
+            color: white;
+        }
+        .sidebar {
+            width: 25%;
+            padding: 20px;
+            border-right: 1px solid #444;
+            height: 100vh;
+        }
+        .content {
+            width: 75%;
+            padding: 20px;
+        }
+        .car-card {
+            background-color: #1e1e1e;
+            border: 1px solid #444;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+        .car-card img {
+            width: 100px;
+            height: 60px;
+            margin-right: 20px;
+            border-radius: 5px;
+        }
+        .btn-check-car {
+            background-color: #17a2b8;
+            color: white;
+        }
+        .btn-check-car:hover {
+            background-color: #138496;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+<div class="d-flex">
+    <div class="sidebar">
+        <h2>Filter Cars</h2>
+        <form th:action="@{/cars}" method="get" id="filterForm" onsubmit="cleanFormBeforeSubmit()">
+            <!-- Brand Dropdown -->
+            <label for="brand">Brand</label>
+            <select id="brand" name="brand" class="form-select mb-2"
+                    onchange="handleBrandChange(this)">
+                <option value="">All Brands</option>
+                <option th:each="brand : ${brands}"
+                        th:value="${brand}"
+                        th:text="${brand}"
+                        th:selected="${selectedBrand == brand}">
+                </option>
+            </select>
+
+            <!-- Model Dropdown -->
+            <label for="model">Model</label>
+            <select id="model" name="model" class="form-select mb-2"
+                    th:disabled="${selectedBrand == null}">
+                <option value="">All Models</option>
+                <option th:each="model : ${models}"
+                        th:value="${model}"
+                        th:text="${model}"
+                        th:selected="${selectedModel == model}">
+                </option>
+            </select>
+
+            <!-- Year Range -->
+            <label>Year</label>
+            <div class="d-flex mb-2">
+                <input type="number" name="minYear" class="form-control me-2"
+                       placeholder="From" th:value="${minYear}">
+                <input type="number" name="maxYear" class="form-control"
+                       placeholder="To" th:value="${maxYear}">
+            </div>
+
+            <!-- KW Range -->
+            <label>KW</label>
+            <div class="d-flex mb-3">
+                <input type="number" name="minKw" class="form-control me-2"
+                       placeholder="From" th:value="${minKw}">
+                <input type="number" name="maxKw" class="form-control"
+                       placeholder="To" th:value="${maxKw}">
+            </div>
+
+            <div class="d-grid gap-2">
+                <button type="submit" class="btn btn-info">Apply Filters</button>
+                <a href="/cars" class="btn btn-secondary">Clear Filters</a>
+                <a href="/cars/create" class="btn btn-primary">CREATE</a>
+            </div>
+        </form>
+    </div>
+
+    <div class="content">
+        <h1 class="text-center">Available Cars</h1>
+        <div class="car-container">
+            <div th:each="car : ${cars}" class="car-card">
+                <div>
+                    <p><strong>Brand:</strong> <span th:text="${car.brand}"></span></p>
+                    <p><strong>Model:</strong> <span th:text="${car.model}"></span></p>
+                    <p><strong>KW:</strong> <span th:text="${car.kw}"></span></p>
+                    <p><strong>Year:</strong> <span th:text="${car.year}"></span></p>
+                    <p><strong>Price:</strong> <span th:text="${car.price}"></span> €</p>
+                </div>
+                <div class="ms-auto">
+                    <a th:href="@{/cars/editCar/{id}(id=${car.id})}" class="btn btn-warning btn-sm me-2">UPDATE</a>
+                    <a th:href="@{/cars/delete/{id}(id=${car.id})}" class="btn btn-danger btn-sm me-2">DELETE</a>
+                    <a th:href="@{/cars/checkCar/{id}(id=${car.id})}" class="btn btn-check-car btn-sm">CHECK CAR</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Edit Car</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" />
+    <style>
+        body {
+            background-color: #121212;
+            color: white;
+        }
+        .form-container {
+            width: 50%;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #1e1e1e;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+    </style>
+</head>
+<body>
+<div class="form-container">
+    <h2>Edit Car</h2>
+    <!--    <form th:action="@{/cars/update}" method="post">-->
+    <form th:action="@{/cars/edit/{id}(id=${car.id})}" method="post">
+        <!-- Car ID (Hidden Field) -->
+        <div th:if="${car != null}">
+            <input type="hidden" name="id" th:value="${car.id}" />
+        </div>
+
+        <!-- Brand -->
+        <div class="mb-3">
+            <label for="brand" class="form-label">Brand</label>
+            <input type="text" id="brand" name="brand" class="form-control" th:value="${car.brand}" />
+        </div>
+
+        <!-- Model -->
+        <div class="mb-3">
+            <label for="model" class="form-label">Model</label>
+            <input type="text" id="model" name="model" class="form-control" th:value="${car.model}" />
+        </div>
+
+        <!-- Year -->
+        <div class="mb-3">
+            <label for="year" class="form-label">Year</label>
+            <input type="number" id="year" name="year" class="form-control" th:value="${car.year}" />
+        </div>
+
+        <!-- KW -->
+        <div class="mb-3">
+            <label for="kw" class="form-label">KW</label>
+            <input type="number" id="kw" name="kw" class="form-control" th:value="${car.kw}" />
+        </div>
+
+        <!-- Fuel -->
+        <div class="mb-3">
+            <label for="fuel" class="form-label">Fuel</label>
+            <select class="form-select" id="fuel" name="fuelId">
+                <option th:each="fuel : ${fuels}"
+                        th:value="${fuel.id}"
+                        th:text="${fuel.fuelType}"
+                        th:selected="${fuel.id == car.fuel.id}"></option>
+            </select>
+        </div>
+        <!-- Color -->
+        <div class="mb-3">
+            <label for="color" class="form-label">Color</label>
+            <input type="text" id="color" name="color" class="form-control" th:value="${car.color}" />
+        </div>
+
+        <!-- Doors -->
+        <div class="mb-3">
+            <label for="doors" class="form-label">Doors</label>
+            <select class="form-select" id="doors" name="doorsId">
+                <option th:each="door : ${doorsList}"
+                        th:value="${door.id}"
+                        th:text="${door.doorCount}"
+                        th:selected="${door.id == car.doors.id}"></option>
+            </select>
+        </div>
+
+        <!-- Kilometers -->
+        <div class="mb-3">
+            <label for="km" class="form-label">Kilometers</label>
+            <input type="number" id="km" name="km" class="form-control" th:value="${car.km}" />
+        </div>
+
+        <!-- Price -->
+        <div class="mb-3">
+            <label for="price" class="form-label">Price</label>
+            <input type="number" id="price" name="price" class="form-control" th:value="${car.price}" />
+        </div>
+
+        <!-- Submit Button -->
+        <button type="submit" class="btn btn-primary">Update Car</button>
+    </form>
+</div>
+</body>
+</html>
