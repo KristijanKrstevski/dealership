@@ -1,4 +1,4 @@
-    Dealership Management System
+Dealership Management System (H1)
 A Spring Boot web application for managing a car dealership,
 including features for adding, editing, and deleting cars 
 with role-based access control (RBAC) using Spring Security.
@@ -32,8 +32,9 @@ Users can view detailed car descriptions.
  Access the Web App
 
 Default Admin Credentials:
-Username: admin
-Password: admin
+
+Username: admin Password: admin
+
 Default User Credentials:
-Username: user
-Password: user
+
+Username: user Password: user
