@@ -1,4 +1,5 @@
-Dealership Management System (H1)
+# Dealership Management System (H1)
+
 A Spring Boot web application for managing a car dealership,
 including features for adding, editing, and deleting cars 
 with role-based access control (RBAC) using Spring Security.
